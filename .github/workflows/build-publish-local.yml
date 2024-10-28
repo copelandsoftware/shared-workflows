@@ -3,7 +3,10 @@ name: Gradle build and publish package to local
 on:
   workflow_call:
     inputs:
-      acr-name:
+      as-conn-string:
+        required: true
+        type: string
+      as-container-name:
         required: true
         type: string
     secrets:
@@ -58,15 +61,26 @@ jobs:
           name: build-reports
           path: '**/build/reports/**/*'
           retention-days: 5
-  download-artifacts:
-    runs-on: [ self-hosted,gdc ]
+
+  publish:
+    runs-on: [ ubuntu-latest ]
     needs: build
     steps:
-      - name: Dowaload build artifacts
+      - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
           name: build-artifacts
-          path: "\\artifacts\\${{ github.repository }}\\${{ github.ref_name }}"
+          path: "\\artifacts"
+      - name: Azure Blob Storage Upload
+        id: az-s-upload
+        uses: copelandsoftware/azure-blob-storage-upload@main
+        with:
+          connection_string: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
+          container_name: ${{ secrets.AZURE_STORAGE_CONTAINER_NAME }}
+          #sas_token: ${{ secrets.AZURE_STORAGE_SAS_TOKEN }}
+          source_dir: "\\artifacts"
+          extra_args: '--pattern *.jar --destination-path artifacts/${{ github.repository }}/${{ github.ref_name }}'
+          overwrite: false
       - name: Delete artifacts
         uses: copelandsoftware/delete-artifact@v5
         with:
