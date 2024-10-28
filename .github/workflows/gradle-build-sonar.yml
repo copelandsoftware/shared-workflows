@@ -32,7 +32,7 @@ jobs:
         server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
         settings-path: ${{ github.workspace }} # location for the settings.xml file
         cache: 'gradle'
-    - name: Set gradlew executalbe
+    - name: Set gradlew executable
       run: chmod +x gradlew
     - name: Build with Gradle
       uses: gradle/gradle-build-action@v3.4.2
@@ -73,7 +73,7 @@ jobs:
     - uses: actions/checkout@v4
       with:
         fetch-depth: 0
-    - name: Set gradlew executalbe
+    - name: Set gradlew executable
       run: chmod +x gradlew
     - name: Run Snyk to monitor for vulnerabilities
       uses: snyk/actions/gradle-jdk17@master
