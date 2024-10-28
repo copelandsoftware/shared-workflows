@@ -75,7 +75,7 @@ jobs:
         uses: copelandsoftware/azure-blob-storage-upload@main
         with:
           connection_string: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
-          container_name: ${{ secrets.AZURE_STORAGE_CONTAINER_NAME }}
+          container_name: ${{ inputs.as-container-name }}
           #sas_token: ${{ secrets.AZURE_STORAGE_SAS_TOKEN }}
           source_dir: "\\artifacts"
           extra_args: '--pattern *.jar --destination-path artifacts/${{ github.repository }}/${{ github.ref_name }}'
