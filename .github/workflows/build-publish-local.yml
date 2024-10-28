@@ -38,16 +38,14 @@ jobs:
       - name: Set image version by property
         run: echo "PACKAGE_VERSION=$(grep "^version=" gradle.properties | cut -d'=' -f2 | tr -d '[:space:]')" >> $GITHUB_ENV
         if: github.ref_type != 'tag'
-      - name: Build with Gradle
+      - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
+      - name: Build with Gradle
+        run: ./gradlew build -Pversion=${{ env.PACKAGE_VERSION }}
         env:
           ORG_GRADLE_PROJECT_externalMavenRepoUrl: https://pkgs.dev.azure.com/ColdChainConn/_packaging/conn_api/maven/v1
           ORG_GRADLE_PROJECT_externalUsername: ColdChainConn
-        with:
-          arguments: |
-            build 
-            -Pversion=${{ env.PACKAGE_VERSION }}
-            -PexternalPassword=${{ secrets.external-maven-repo-password }}
+          ORG_GRADLE_PROJECT_externalPassword: ${{ secrets.external-maven-repo-password }}
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -74,7 +72,7 @@ jobs:
         id: az-s-upload
         uses: copelandsoftware/azure-blob-storage-upload@main
         with:
-          connection_string: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
+          connection_string: ${{ secrets.as-conn-string }}
           container_name: ${{ inputs.as-container-name }}
           #sas_token: ${{ secrets.AZURE_STORAGE_SAS_TOKEN }}
           source_dir: "\\artifacts"
