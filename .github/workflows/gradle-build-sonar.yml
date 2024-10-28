@@ -32,18 +32,19 @@ jobs:
         server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
         settings-path: ${{ github.workspace }} # location for the settings.xml file
         cache: 'gradle'
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v4
     - name: Set gradlew executable
       run: chmod +x gradlew
     - name: Build with Gradle
-      uses: gradle/gradle-build-action@v3.4.2
+      run: ./gradlew build sonar
       env:
         SONAR_TOKEN: ${{ secrets.sonar-token }}
         SONAR_HOST_URL: https://sonarcloud.io
         GITHUB_TOKEN: ${{ secrets.githubToken }}
         ORG_GRADLE_PROJECT_externalMavenRepoUrl: https://pkgs.dev.azure.com/ColdChainConn/_packaging/conn_api/maven/v1
         ORG_GRADLE_PROJECT_externalUsername: ColdChainConn
-      with:
-        arguments: build sonar -PexternalPassword=${{ secrets.external-maven-repo-password }}
+        ORG_GRADLE_PROJECT_externalPassword: ${{ secrets.external-maven-repo-password }}
     - name: Upload test report if build failed
       if: failure()
       uses: actions/upload-artifact@v4
