@@ -3,13 +3,12 @@ name: Gradle build and publish package to local
 on:
   workflow_call:
     inputs:
-      as-conn-string:
-        required: true
-        type: string
       as-container-name:
         required: true
         type: string
     secrets:
+      as-conn-string:
+        required: true
       external-maven-repo-password:
         required: true
 
