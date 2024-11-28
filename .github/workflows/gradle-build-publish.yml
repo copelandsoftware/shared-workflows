@@ -25,14 +25,12 @@ jobs:
       run: |
        echo '${{ toJson(github) }}' > githubcontext.json
        cat githubcontext.json
-    - name: Set package version by ref_name
+    - name: Set package version by tag
       run: echo "PACKAGE_VERSION=${{ github.ref_name }}" >> $GITHUB_ENV
-    #- name: Set package version by tag
-    #  run: echo "PACKAGE_VERSION=${{ github.ref_name }}" >> $GITHUB_ENV
-    #  if: github.ref_type == 'tag'
-    #- name: Set package version by property
-    #  run: echo "PACKAGE_VERSION=$(grep "^version=" gradle.properties | cut -d'=' -f2 | tr -d '[:space:]')" >> $GITHUB_ENV
-    #  if: github.ref_type != 'tag'
+      if: github.ref_type == 'tag'
+    - name: Set package version by property
+      run: echo "PACKAGE_VERSION=$(grep "^version=" gradle.properties | cut -d'=' -f2 | tr -d '[:space:]')" >> $GITHUB_ENV
+      if: github.ref_type != 'tag'
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v4
     - name: Set gradlew executable
